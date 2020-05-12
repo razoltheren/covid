@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>World Map</title>
+	<link rel="icon" href="webLogo.png" type="image/icon type">
+
+	<!-- MAP -->
+	<script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet' />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+	<style type="text/css">
+		.mapboxgl-popup {
+		  max-width: 200px;
+		}
+
+		.mapboxgl-popup-content {
+		  background: black;
+		  color: orange;
+		  text-align: center;
+		  font-family: 'Open Sans', sans-serif;
+		} 
+		#map{
+			position: absolute;
+			top: 8.7%;
+		}
+
+		.footer{position:absolute;right:0;bottom:0;left:0;top:92%;padding:1rem;background-color:#efefef;text-align:center}
+
+	</style>
+</head>
+<body>
+	<nav class="navbar" style="background:  #1e1e2f;" >
+  		<!-- <h4 align="center" style="padding:5px;color: #fff">CoronaVirus(Covid-19) Dashboard</h4> -->
+  		<!-- <form class="form-inline" id="search-country">
+		    <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
+		  </form> -->
+  		<a class="navbar-brand mx-auto" style="color: #fff"><h4>World Map</h4></a>
+		 <a class="navbar" href="index.html" style="color: #fff;text-decoration: none;font-size:20px">Home</a>
+    </nav>
+
+<div id='map' style='width: 100vw; height: 40vw;'></div>
+
+<script type="text/javascript">
+
+	//to get map
+				mapboxgl.accessToken = 'pk.eyJ1IjoiamFja2VudDJiIiwiYSI6ImNrN3V4Z290ZTFiMjQzZm91ZjFkYzA1OHMifQ.D9RSONtuQJUI6sJTVWQaww';
+				var map = new mapboxgl.Map({
+				container: 'map',
+				style: 'mapbox://styles/mapbox/dark-v10',
+				zoom:2.1,
+				center:[0,20]
+			});
+			//map ends
+
+	function getColor(count){
+		if (count<=1000) {
+			return "#3399ff"
+		}
+		else if(count>1000 && count<2500){
+			return "#ffcc00"
+		}
+		else{
+			return "#e6005c"
+		}
+	}
+
+
+
+
+
+	//data for map	
+	getData();
+	async function getData(){
+		const res = await fetch("https://corona-api.com/countries");
+		const back = await res.json();
+		//console.log(back.data);
+
+
+		for (var i = 0; i < back.data.length; i++) {
+			//console.log(back.data[i]);
+			
+			// console.log(back.data[i].coordinates);
+			// console.log(back.data[i].name);
+			// console.log(back.data[i].today.deaths);
+			// console.log(back.data[i].today.confirmed);
+			
+			// console.log(back.data[i].latest_data.deaths);
+			// console.log(back.data[i].latest_data.confirmed);
+			// console.log(back.data[i].latest_data.recovered);
+			// console.log(back.data[i].latest_data.critical);
+			// console.log(back.data[i].latest_data.calculated.death_rate);
+			// console.log(back.data[i].latest_data.calculated.recovery_rate);
+			// console.log(back.data[i].latest_data.calculated.cases_per_million_population);
+
+			const marker = new mapboxgl.Marker({
+				color: getColor(back.data[i].latest_data.confirmed)
+			}).setLngLat([back.data[i].coordinates.longitude, back.data[i].coordinates.latitude])
+			// add popups
+			.setPopup(new mapboxgl.Popup({ offset: 25 }) 
+    		.setHTML('<h3>' + back.data[i].name + '</h3><p>Confirmed:' + back.data[i].latest_data.confirmed + '</p><p>Recovered: '+back.data[i].latest_data.recovered+"</p><p>Deaths: "+back.data[i].latest_data.deaths+"</p>"))
+			.addTo(map);
+
+			const markerDiv = marker.getElement();
+
+			markerDiv.addEventListener('mouseenter', () => marker.togglePopup());
+			markerDiv.addEventListener('mouseleave', () => marker.togglePopup());
+
+			map.on('click', event => {
+			  e.preventDefault();
+			});
+
+
+			// new mapboxgl.Marker({
+			// 	color: getColor(back.data[i].latest_data.confirmed)
+			// }).setLngLat([back.data[i].coordinates.longitude, back.data[i].coordinates.latitude])
+			// .setPopup(new mapboxgl.Popup({ offset: 25 }) // add popups
+		   //  		.setHTML('<h3>' + back.data[i].name + '</h3><p>Confirmed:' + back.data[i].latest_data.confirmed + '</p><p>Recovered: '+back.data[i].latest_data.recovered+"</p><p>Deaths: "+back.data[i].latest_data.deaths+"</p>"))
+					// .addTo(map);		
+		}
+	}
+
+
+
+
+</script>
+<footer class="footer">Developed and Maintained By:<strong><a href="https://www.linkedin.com/in/ishita-batra-0809" target="_blank" style="text-decoration:none;color: rgb(0, 153, 255);">Ishita Batra</a></strong> </footer>
+</body>
+</html>

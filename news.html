@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Updated News on Covid-19</title>
+	<link rel="icon" href="webLogo.png" type="image/icon type">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<style type="text/css">
+	body{
+		/*background: black;*/
+		/*color: white;*/
+	}
+	p,h2,a,h6{
+		padding-left: 250px; 
+		padding-right: 250px;
+	}
+	.line1{
+		color: #ff3399;
+	}
+	.h2{
+		padding-top: 30px;
+	}
+	
+	img{
+		height: 300px;
+		width: 500px;
+		/*padding-left: 250px; 
+		padding-right: 250px;*/
+		position: relative;
+		left: 250px;
+		padding-bottom:30px;		
+	}
+
+</style>
+<body>
+	<nav class="navbar" style="background:  #1e1e2f;" >
+  		<!-- <h4 align="center" style="padding:5px;color: #fff">CoronaVirus(Covid-19) Dashboard</h4> -->
+  		<!-- <form class="form-inline" id="search-country">
+		    <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
+		  </form> -->
+  		<a class="navbar-brand mx-auto" style="color: #fff"><h4>Live News Panel</h4></a>
+		 <a class="navbar" href="index.html" style="color: #fff;text-decoration: none;font-size:20px">Home</a>
+        </nav>
+	<!-- <h1 >NEWS</h1> -->
+	<!-- <ul >
+		<p id="p1" style="color: white">title</p>
+		<p id="p2" style="color: white">desc</p>
+	</ul> -->
+
+
+
+	<script type="text/javascript">
+		getnews();
+		async function getnews(){
+		// https://newsapi.org/v2/top-headlines?q=covid-19&sources=google-news-in&apiKey=f86f01aa0a2d45a3b72c61a0391459ce	
+		let res = await fetch('https://newsapi.org/v2/top-headlines?q=corona&sources=google-news-in&apiKey=f86f01aa0a2d45a3b72c61a0391459ce');
+		let data = await res.json();
+
+		for(var i=0;i<data.articles.length;i++){
+		//console.log(data.articles[i].title);
+		//console.log(data.articles[i].description);
+
+
+		 var line1 = document.createElement("h6");
+		 var line2 = document.createElement("p");
+		 var h2 = document.createElement("h2");
+		 var url = document.createElement("a");
+		 var img = document.createElement("img");
+
+  		 line1.className = "line1";
+  		 line2.className = "line2";
+  		 h2.className = "h2";
+  		 url.className = "url";
+  		 img.className = "img";
+ 		 
+ 		 line1.innerHTML = data.articles[i].title;
+ 		 line2.innerHTML = data.articles[i].description;
+ 		 h2.innerHTML = '#'+(i+1);
+ 		 url.href = data.articles[i].url;
+ 		 img.src = data.articles[i].urlToImage;
+ 		 url.innerHTML = 'Read out this complete News here'
+ 		 
+ 		 document.body.appendChild(h2);
+ 		 document.body.appendChild(line1);
+ 		 document.body.appendChild(url);
+ 		 document.body.appendChild(line2);
+ 		 document.body.appendChild(img);
+ 		 
+		}
+
+		}
+	</script>
+</body>
+</html>

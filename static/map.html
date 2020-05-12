@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Map</title>
+
+	<!-- MAP -->
+	<script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet' />
+
+	<!-- chart.js cdn -->
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+
+
+
+	<style type="text/css">
+		.mapboxgl-popup {
+		  max-width: 200px;
+		}
+
+		.mapboxgl-popup-content {
+		  background: black;
+		  color: orange;
+		  text-align: center;
+		  font-family: 'Open Sans', sans-serif;
+		}
+
+		.canvas-containerH {
+
+		max-height: 50%;
+		max-width: 100%;
+		position: absolute;
+		background: #1e1e2f;
+    	display: inline;
+    	padding: 20px;
+		}
+
+		#chartH {
+		height: 50%;
+		width: 100%;
+		position: absolute;
+		right: 0%;
+		top: 200%;
+		padding: 20px;
+		 }   
+
+	</style>
+</head>
+<body>
+
+<h1>Map</h1>
+<div id='map' style='width: 100vw; height: 40vw;'></div>
+
+<div id="cH"><canvas id="chartH" class="canvas-containerH"></canvas></div>
+
+<script type="text/javascript">
+
+	//to get map
+				mapboxgl.accessToken = 'pk.eyJ1IjoiamFja2VudDJiIiwiYSI6ImNrN3V4Z290ZTFiMjQzZm91ZjFkYzA1OHMifQ.D9RSONtuQJUI6sJTVWQaww';
+				var map = new mapboxgl.Map({
+				container: 'map',
+				style: 'mapbox://styles/mapbox/dark-v10',
+				zoom:2.1,
+				center:[0,20]
+			});
+			//map ends
+
+	function getColor(count){
+		if (count<=1000) {
+			return "#3399ff"
+		}
+		else if(count>1000 && count<2500){
+			return "#ffcc00"
+		}
+		else{
+			return "#e6005c"
+		}
+	}
+
+
+	//data for map	
+	getData();
+	async function getData(){
+		const res = await fetch("https://corona-api.com/countries");
+		const back = await res.json();
+		//console.log(back.data);
+
+
+		for (var i = 0; i < back.data.length; i++) {
+			//console.log(back.data[i]);
+			
+			// console.log(back.data[i].coordinates);
+			// console.log(back.data[i].name);
+			// console.log(back.data[i].today.deaths);
+			// console.log(back.data[i].today.confirmed);
+			
+			// console.log(back.data[i].latest_data.deaths);
+			// console.log(back.data[i].latest_data.confirmed);
+			// console.log(back.data[i].latest_data.recovered);
+			// console.log(back.data[i].latest_data.critical);
+			// console.log(back.data[i].latest_data.calculated.death_rate);
+			// console.log(back.data[i].latest_data.calculated.recovery_rate);
+			// console.log(back.data[i].latest_data.calculated.cases_per_million_population);
+
+			const marker = new mapboxgl.Marker({
+				color: getColor(back.data[i].latest_data.confirmed)
+			}).setLngLat([back.data[i].coordinates.longitude, back.data[i].coordinates.latitude])
+			// add popups
+			.setPopup(new mapboxgl.Popup({ offset: 25 }) 
+    		.setHTML('<h3>' + back.data[i].name + '</h3><p>Confirmed:' + back.data[i].latest_data.confirmed + '</p><p>Recovered: '+back.data[i].latest_data.recovered+"</p><p>Deaths: "+back.data[i].latest_data.deaths+"</p>"))
+			.addTo(map);
+
+			const markerDiv = marker.getElement();
+
+			markerDiv.addEventListener('mouseenter', () => marker.togglePopup());
+			markerDiv.addEventListener('mouseleave', () => marker.togglePopup());
+
+			map.on('click', event => {
+			  e.preventDefault();
+			});
+
+
+			// new mapboxgl.Marker({
+			// 	color: getColor(back.data[i].latest_data.confirmed)
+			// }).setLngLat([back.data[i].coordinates.longitude, back.data[i].coordinates.latitude])
+			// .setPopup(new mapboxgl.Popup({ offset: 25 }) // add popups
+		   //  		.setHTML('<h3>' + back.data[i].name + '</h3><p>Confirmed:' + back.data[i].latest_data.confirmed + '</p><p>Recovered: '+back.data[i].latest_data.recovered+"</p><p>Deaths: "+back.data[i].latest_data.deaths+"</p>"))
+					// .addTo(map);		
+		}
+	}
+
+</script>
+</body>
+</html>
